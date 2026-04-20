@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriPredict — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="particles" id="particles"></div>
+
+<div class="card">
+  <div class="logo-wrap">
+    <img src="assets/logo_unindra.png" alt="Logo Universitas Indraprasta PGRI" />
+    <div class="brand-name">NutriPredict</div>
+    <div class="tagline">Prediksi Status Gizi dan Kebutuhan Kalori Berbasis Backpropagation</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('login')">Masuk</button>
+    <button class="tab-btn" onclick="showTab('register')">Daftar</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="login-form">
+    <div id="login-alert" class="alert"></div>
+    <div class="field">
+      <label>Username</label>
+      <div class="input-wrap">
+        <span class="icon">👤</span>
+        <input type="text" id="login-username" placeholder="Masukkan username" autocomplete="username" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="icon">🔒</span>
+        <input type="password" id="login-password" placeholder="Masukkan password" autocomplete="current-password" />
+        <button class="toggle-pw" onclick="togglePw('login-password', this)">👁</button>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Masuk</button>
+    <div class="divider">atau</div>
+    <div class="link-row">Belum punya akun? <a href="#" onclick="showTab('register')">Daftar sekarang</a></div>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="register-form">
+    <div id="reg-alert" class="alert"></div>
+    <div class="field">
+      <label>Nama Lengkap</label>
+      <div class="input-wrap">
+        <span class="icon">✍</span>
+        <input type="text" id="reg-name" placeholder="Nama lengkap Anda" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Username</label>
+      <div class="input-wrap">
+        <span class="icon">👤</span>
+        <input type="text" id="reg-username" placeholder="Buat username" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="icon">🔒</span>
+        <input type="password" id="reg-password" placeholder="Buat password (min. 6 karakter)" />
+        <button class="toggle-pw" onclick="togglePw('reg-password', this)">👁</button>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="doRegister()">Daftar Akun</button>
+    <div class="divider">atau</div>
+    <div class="link-row">Sudah punya akun? <a href="#" onclick="showTab('login')">Masuk di sini</a></div>
+  </div>
+</div>
+
+<script>
+  // Particles
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 14 + 6;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      animation-duration:${Math.random()*12+8}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    container.appendChild(p);
+  }
+
+  // Tab switching
+  function showTab(tab) {
+    document.getElementById('login-form').style.display   = tab === 'login'    ? 'block' : 'none';
+    document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register')));
+  }
+
+  // Toggle password visibility
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+  }
+
+  // Simple localStorage auth
+  function getUsers() { return JSON.parse(localStorage.getItem('np_users') || '[]'); }
+  function saveUsers(u) { localStorage.setItem('np_users', JSON.stringify(u)); }
+
+  function doRegister() {
+    const name = document.getElementById('reg-name').value.trim();
+    const username = document.getElementById('reg-username').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const alert = document.getElementById('reg-alert');
+    alert.className = 'alert';
+
+    if (!name || !username || !password) { alert.className = 'alert error'; alert.textContent = 'Semua field harus diisi!'; return; }
+    if (password.length < 6) { alert.className = 'alert error'; alert.textContent = 'Password minimal 6 karakter!'; return; }
+
+    const users = getUsers();
+    if (users.find(u => u.username === username)) { alert.className = 'alert error'; alert.textContent = 'Username sudah digunakan!'; return; }
+
+    users.push({ name, username, password });
+    saveUsers(users);
+    alert.className = 'alert success';
+    alert.textContent = '✓ Akun berhasil dibuat! Silakan masuk.';
+    setTimeout(() => showTab('login'), 1500);
+  }
+
+  function doLogin() {
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    const alert = document.getElementById('login-alert');
+    alert.className = 'alert';
+
+    if (!username || !password) { alert.className = 'alert error'; alert.textContent = 'Username dan password wajib diisi!'; return; }
+
+    // Default demo account
+    if (username === 'demo' && password === 'demo123') {
+      localStorage.setItem('np_user', JSON.stringify({ name: 'Demo User', username: 'demo' }));
+      window.location.href = 'dashboard.html'; return;
+    }
+
+    const users = getUsers();
+    const user = users.find(u => u.username === username && u.password === password);
+    if (!user) { alert.className = 'alert error'; alert.textContent = 'Username atau password salah!'; return; }
+
+    localStorage.setItem('np_user', JSON.stringify({ name: user.name, username: user.username }));
+    window.location.href = 'dashboard.html';
+  }
+
+  // Enter key
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>

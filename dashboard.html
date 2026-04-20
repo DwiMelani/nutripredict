@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriPredict — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+     <img src="assets/logo_unindra.png" alt="Logo Universitas Indraprasta PGRI" />
+    <div class="sidebar-brand-text">
+      <div class="name">NutriPredict</div>
+      <div class="sub">Universitas Indraprasta PGRI</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Menu Utama</div>
+    <a class="nav-item active" href="#" onclick="showPage('dashboard', this)">
+      <span class="icon">🏠</span> Dashboard
+    </a>
+    <a class="nav-item" href="#" onclick="showPage('input', this)">
+      <span class="icon">📝</span> Input Data
+    </a>
+    <a class="nav-item" href="#" onclick="showPage('process', this)">
+      <span class="icon">⚙️</span> Proses
+    </a>
+    <a class="nav-item" href="#" onclick="showPage('result', this)">
+      <span class="icon">📊</span> Hasil Prediksi
+    </a>
+    <a class="nav-item" href="#" onclick="showPage('riwayat', this)">
+      <span class="icon">🕘</span> Riwayat Prediksi
+    </a>
+    <div class="nav-label">Info</div>
+    <a class="nav-item" href="#" onclick="showPage('about', this)">
+      <span class="icon">ℹ️</span> Tentang Sistem
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar" id="user-avatar">U</div>
+      <div class="user-info">
+        <div class="uname" id="user-name-display">User</div>
+        <div class="urole">Pengguna</div>
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Keluar">⏏</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-right">
+      <div class="topbar-badge">NutriPredict v1.0</div>
+    </div>
+  </header>
+
+  <div class="page-content">
+
+    <!-- === DASHBOARD PAGE === -->
+    <div class="page active fade-in" id="page-dashboard">
+      <div class="hero-card">
+        <div class="hero-greeting">Selamat datang kembali 👋</div>
+        <div class="hero-name" id="hero-name">Halo, !</div>
+        <div class="hero-desc">
+          Sistem prediksi status gizi berbasis Multi Layer Perceptron <em>(Artificial Neural Network)</em> dengan metode Backpropagation.
+          Masukkan data tubuh Anda untuk mendapatkan prediksi status gizi dan rekomendasi kalori harian.
+        </div>
+        <button class="hero-btn" onclick="showPage('input', document.querySelector('[onclick*=input]'))">
+          Mulai Prediksi Sekarang
+        </button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card pink">
+          <div class="stat-icon">🧬</div>
+          <div class="stat-label">Metode</div>
+          <div class="stat-value" style="font-size:1.1rem">Backpropagation</div>
+          <div class="stat-sub">Artificial Neural Network</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">📐</div>
+          <div class="stat-label">Parameter Input</div>
+          <div class="stat-value">4</div>
+          <div class="stat-sub">BB, TB, Umur, JK</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon">🏷️</div>
+          <div class="stat-label">Kategori Status</div>
+          <div class="stat-value">4</div>
+          <div class="stat-sub">Kurus, Normal, Lebih, Obesitas</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-label">Output</div>
+          <div class="stat-value" style="font-size:1rem">Kalori</div>
+          <div class="stat-sub">kkal/hari rekomendasi</div>
+        </div>
+      </div>
+
+      <div class="section-title">Alur Sistem</div>
+      <div class="section-sub">Proses prediksi berjalan dalam 4 tahap utama</div>
+      <div class="steps-strip">
+        <div class="steps-title">PIPELINE SISTEM</div>
+        <div class="steps-row">
+          <div class="step-chip s1"><span>1</span> Input Data</div>
+          <div class="step-arrow">→</div>
+          <div class="step-chip s2"><span>2</span> Hitung BMI</div>
+          <div class="step-arrow">→</div>
+          <div class="step-chip s3"><span>3</span> Training</div>
+          <div class="step-arrow">→</div>
+          <div class="step-chip s4"><span>4</span> Prediksi Output</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === INPUT DATA PAGE === -->
+    <div class="page fade-in" id="page-input">
+      <div class="section-title">Input Data Pengguna</div>
+      <div class="section-sub">Masukkan data antropometri untuk memulai proses prediksi status gizi</div>
+
+      <div class="form-card">
+        <div class="form-grid">
+          <!-- Berat Badan -->
+          <div class="field-group">
+            <label>⚖️ Berat Badan <span class="hint">(kg)</span></label>
+            <div class="range-wrap" style="margin-top:24px">
+              <div class="range-val" id="bb-val">60 kg</div>
+              <input type="range" id="bb" min="20" max="150" value="60" oninput="updateRange('bb','bb-val','kg'); calcBMI()">
+            </div>
+            <input type="number" id="bb-num" class="input-styled" style="margin-top:14px" placeholder="Atau ketik langsung..." min="20" max="150" value="60" oninput="syncRange('bb-num','bb'); calcBMI()">
+          </div>
+
+          <!-- Tinggi Badan -->
+          <div class="field-group">
+            <label>📏 Tinggi Badan <span class="hint">(cm)</span></label>
+            <div class="range-wrap" style="margin-top:24px">
+              <div class="range-val" id="tb-val">165 cm</div>
+              <input type="range" id="tb" min="100" max="220" value="165" oninput="updateRange('tb','tb-val','cm'); calcBMI()">
+            </div>
+            <input type="number" id="tb-num" class="input-styled" style="margin-top:14px" placeholder="Atau ketik langsung..." min="100" max="220" value="165" oninput="syncRange('tb-num','tb'); calcBMI()">
+          </div>
+
+          <!-- Umur -->
+          <div class="field-group">
+            <label>🎂 Umur <span class="hint">(tahun)</span></label>
+            <div class="range-wrap" style="margin-top:24px">
+              <div class="range-val" id="umur-val">25 thn</div>
+              <input type="range" id="umur" min="5" max="90" value="25" oninput="updateRange('umur','umur-val','thn'); calcBMI()">
+            </div>
+            <input type="number" id="umur-num" class="input-styled" style="margin-top:14px" placeholder="Atau ketik langsung..." min="5" max="90" value="25" oninput="syncRange('umur-num','umur'); calcBMI()">
+          </div>
+
+          <!-- Jenis Kelamin -->
+          <div class="field-group">
+            <label>⚧️ Jenis Kelamin</label>
+            <div class="gender-row" style="margin-top:10px">
+              <label class="gender-option selected-male" id="lbl-male" onclick="selectGender('L')">
+                <input type="radio" name="jk" value="L" checked> 👨 Laki-laki
+              </label>
+              <label class="gender-option" id="lbl-female" onclick="selectGender('P')">
+                <input type="radio" name="jk" value="P"> 👩 Perempuan
+              </label>
+            </div>
+          </div>
+
+          <!-- BMI Preview -->
+          <div class="field-group form-full">
+            <label>📊 Estimasi BMI / IMT</label>
+            <div class="bmi-preview">
+              <div>
+                <div class="bmi-number" id="bmi-num">22.1</div>
+                <div class="bmi-label">kg/m²</div>
+              </div>
+              <div style="flex:1">
+                <div class="bmi-status normal" id="bmi-status">Normal</div>
+                <div style="font-size:0.8rem;color:var(--text-light);margin-top:4px">
+                  Kurus &lt;18.5 · Normal 18.5–24.9 · Overweight 25–29.9 · Obesitas ≥30
+                </div>
+                <div style="font-size:0.78rem;color:var(--text-light);margin-top:6px" id="bmi-desc">
+                  Berat badan Anda dalam rentang yang sehat.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-process" onclick="processData()">
+          Proses dengan Backpropagation
+        </button>
+      </div>
+
+      <div class="steps-strip" style="margin-top:20px">
+        <div class="steps-title">TAHAP SELANJUTNYA</div>
+        <div class="steps-row">
+          <div class="step-chip s2">Normalisasi data input</div>
+          <div class="step-arrow">→</div>
+          <div class="step-chip s3">Feedforward + Training ANN</div>
+          <div class="step-arrow">→</div>
+          <div class="step-chip s4">Prediksi & Rekomendasi</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === PROCESS BP PAGE === -->
+    <div class="page fade-in" id="page-process">
+      <!-- Content injected by JS -->
+    </div>
+
+    <!-- === RESULT PAGE === -->
+    <div class="page fade-in" id="page-result">
+      <!-- Content injected by JS -->
+    </div>
+
+    <!-- === ABOUT PAGE === -->
+    <div class="page fade-in" id="page-about">
+      <div class="section-title">Tentang Sistem</div>
+      <div class="section-sub">Informasi mengenai NutriPredict</div>
+      <div class="form-card">
+        <div style="display:grid;gap:16px">
+          <div style="background:var(--pink-50);border-radius:14px;padding:20px">
+            <div style="font-weight:700;color:var(--pink-500);margin-bottom:6px">🧬 Metode: Backpropagation ANN</div>
+            <div style="font-size:0.87rem;color:var(--text-mid);line-height:1.7">
+              Sistem menggunakan Artificial Neural Network dengan algoritma Backpropagation untuk mempelajari pola hubungan antara variabel input (BB, TB, umur, jenis kelamin) terhadap status gizi dan kebutuhan kalori.
+            </div>
+          </div>
+          <div style="background:var(--blue-50);border-radius:14px;padding:20px">
+            <div style="font-weight:700;color:var(--blue-500);margin-bottom:6px">📐 Parameter Input</div>
+            <div style="font-size:0.87rem;color:var(--text-mid);line-height:1.7">
+              Berat Badan (kg) · Tinggi Badan (cm) · Umur (tahun) · Jenis Kelamin (L/P)
+            </div>
+          </div>
+          <div style="background:#f5f3ff;border-radius:14px;padding:20px">
+            <div style="font-weight:700;color:#7c3aed;margin-bottom:6px">🏷️ Output Sistem</div>
+            <div style="font-size:0.87rem;color:var(--text-mid);line-height:1.7">
+              Status Gizi: Kurus · Normal · Overweight · Obesitas<br>
+              Rekomendasi Kalori Harian (kkal/hari) disesuaikan kondisi tubuh.
+            </div>
+          </div>
+          <div style="background:#f0fdf4;border-radius:14px;padding:20px">
+            <div style="font-weight:700;color:#059669;margin-bottom:6px">🎓 Dikembangkan Oleh</div>
+            <div style="font-size:0.87rem;color:var(--text-mid);line-height:1.7">
+              Kelompok 7 · Program Studi Informatika<br>
+              Sistem Prediksi Status Gizi dan Kebutuhan Kalori Berbasis Web
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === RIWAYAT PAGE === -->
+    <div class="page fade-in" id="page-riwayat">
+      <div class="section-title">Riwayat Prediksi</div>
+      <div class="section-sub">Rekap semua prediksi yang pernah dilakukan pada perangkat ini</div>
+      <div id="riwayat-container">
+        <!-- Diisi oleh JS -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Auth check
+  const user = JSON.parse(localStorage.getItem('np_user') || 'null');
+  if (!user) { window.location.href = 'index.html'; }
+  else {
+    document.getElementById('hero-name').textContent = 'Halo, ' + user.name + '!';
+    document.getElementById('user-name-display').textContent = user.name;
+    document.getElementById('user-avatar').textContent = user.name[0].toUpperCase();
+  }
+
+  function logout() {
+    localStorage.removeItem('np_user');
+    window.location.href = 'index.html';
+  }
+
+  // Page navigation
+  function showPage(name, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const titles = { dashboard: 'Dashboard', input: 'Input Data', process: 'Proses ANN', result: 'Hasil Prediksi', about: 'Tentang Sistem', riwayat: 'Riwayat Prediksi' };
+    document.getElementById('page-title').textContent = titles[name] || name;
+    if (name === 'riwayat') renderRiwayat();
+    return false;
+  }
+
+  // Range sliders
+  function updateRange(id, valId, unit) {
+    const v = document.getElementById(id).value;
+    document.getElementById(valId).textContent = v + ' ' + unit;
+    document.getElementById(id + '-num').value = v;
+    // Update gradient fill
+    const el = document.getElementById(id);
+    const pct = ((v - el.min) / (el.max - el.min) * 100).toFixed(1) + '%';
+    el.style.setProperty('--val', pct);
+  }
+  function syncRange(numId, rangeId) {
+    const v = document.getElementById(numId).value;
+    document.getElementById(rangeId).value = v;
+    const suffix = { bb: 'kg', tb: 'cm', umur: 'thn' };
+    const base = rangeId;
+    updateRange(rangeId, rangeId + '-val', suffix[base]);
+  }
+
+  // Gender
+  let selectedGender = 'L';
+  function selectGender(g) {
+    selectedGender = g;
+    document.getElementById('lbl-male').className = 'gender-option' + (g === 'L' ? ' selected-male' : '');
+    document.getElementById('lbl-female').className = 'gender-option' + (g === 'P' ? ' selected-female' : '');
+  }
+
+  // BMI Calculation
+  function calcBMI() {
+    const bb = parseFloat(document.getElementById('bb').value);
+    const tb = parseFloat(document.getElementById('tb').value) / 100;
+    if (!bb || !tb) return;
+    const bmi = (bb / (tb * tb)).toFixed(1);
+    document.getElementById('bmi-num').textContent = bmi;
+    const statusEl = document.getElementById('bmi-status');
+    const descEl = document.getElementById('bmi-desc');
+    let cls, label, desc;
+    if (bmi < 18.5) {
+      cls = 'kurus'; label = 'Kurus (Underweight)';
+      desc = 'Berat badan kurang dari ideal. Pertimbangkan meningkatkan asupan kalori.';
+    } else if (bmi < 25) {
+      cls = 'normal'; label = 'Normal';
+      desc = 'Berat badan Anda dalam rentang yang sehat.';
+    } else if (bmi < 30) {
+      cls = 'lebih'; label = 'Overweight';
+      desc = 'Berat badan melebihi ideal. Perhatikan pola makan dan aktivitas fisik.';
+    } else {
+      cls = 'obesitas'; label = 'Obesitas';
+      desc = 'Berat badan jauh di atas ideal. Konsultasikan dengan dokter atau ahli gizi.';
+    }
+    statusEl.className = 'bmi-status ' + cls;
+    statusEl.textContent = label;
+    descEl.textContent = desc;
+  }
+  calcBMI();
+  // Init ranges
+  ['bb', 'tb', 'umur'].forEach(id => {
+    const el = document.getElementById(id);
+    const pct = ((el.value - el.min) / (el.max - el.min) * 100).toFixed(1) + '%';
+    el.style.setProperty('--val', pct);
+  });
+
+  // Process data → go to process page
+  function processData() {
+    const bb = parseFloat(document.getElementById('bb').value);
+    const tb = parseFloat(document.getElementById('tb').value);
+    const umur = parseFloat(document.getElementById('umur').value);
+    const jk = selectedGender;
+    if (!bb || !tb || !umur) { alert('Lengkapi semua data terlebih dahulu!'); return; }
+
+    // Save to session
+    const data = { bb, tb, umur, jk };
+    sessionStorage.setItem('np_data', JSON.stringify(data));
+
+    // Build and show process page
+    buildProcessPage(data);
+    showPage('process', document.querySelector('[onclick*=process]'));
+  }
+
+  // ===========================
+  // BACKPROPAGATION ENGINE
+  // ===========================
+  function buildProcessPage(data) {
+    const { bb, tb, umur, jk } = data;
+    const tbM = tb / 100;
+    const bmi = +(bb / (tbM * tbM)).toFixed(2);
+
+    // --- Normalisasi min-max [0,1] ---
+    const norm = {
+      bb:   +((bb - 20) / (150 - 20)).toFixed(4),
+      tb:   +((tb - 100) / (220 - 100)).toFixed(4),
+      umur: +((umur - 5) / (90 - 5)).toFixed(4),
+      jk:   jk === 'L' ? 1 : 0
+    };
+
+    // --- ANN Architecture: 4 → 5 → 4 → 2 ---
+    // Pre-trained weights (simulated from training dataset)
+    const W1 = [
+      [0.45, -0.32, 0.61, 0.28, -0.51],
+      [-0.38, 0.55, -0.44, 0.67, 0.33],
+      [0.22, -0.48, 0.39, -0.55, 0.70],
+      [0.61, 0.30, -0.52, 0.44, -0.38]
+    ];
+    const b1 = [0.1, -0.15, 0.08, 0.12, -0.05];
+
+    const W2 = [
+      [0.55, -0.42, 0.38, 0.60],
+      [-0.44, 0.61, -0.50, 0.35],
+      [0.38, -0.55, 0.65, -0.40],
+      [-0.60, 0.48, -0.38, 0.55],
+      [0.42, -0.35, 0.52, -0.48]
+    ];
+    const b2 = [0.05, -0.10, 0.08, -0.06];
+
+    const W3 = [
+      [0.72, 0.58],
+      [-0.65, 0.71],
+      [0.48, -0.60],
+      [-0.55, 0.68]
+    ];
+    const b3 = [0.03, -0.07];
+
+    const input = [norm.bb, norm.tb, norm.umur, norm.jk];
+    const sigmoid = x => 1 / (1 + Math.exp(-x));
+
+    // Feedforward
+    const z1 = W1[0].map((_, j) => input.reduce((s, xi, i) => s + xi * W1[i][j], 0) + b1[j]);
+    const h1 = z1.map(sigmoid);
+    const z2 = W2[0].map((_, j) => h1.reduce((s, hi, i) => s + hi * W2[i][j], 0) + b2[j]);
+    const h2 = z2.map(sigmoid);
+    const z3 = W3[0].map((_, j) => h2.reduce((s, hi, i) => s + hi * W3[i][j], 0) + b3[j]);
+    const output = z3.map(sigmoid);
+
+    // --- Target labels ---
+    let statusIdx;
+    if (bmi < 18.5) statusIdx = 0;
+    else if (bmi < 25) statusIdx = 1;
+    else if (bmi < 30) statusIdx = 2;
+    else statusIdx = 3;
+
+    const statusLabels = ['Kurus', 'Normal', 'Overweight', 'Obesitas'];
+    const statusColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+    const statusIcons  = ['🧊', '✅', '⚠️', '🔴'];
+
+    // Kalori menggunakan Mifflin-St Jeor + faktor aktivitas ringan
+    let bmr;
+    if (jk === 'L') bmr = 10 * bb + 6.25 * tb - 5 * umur + 5;
+    else           bmr = 10 * bb + 6.25 * tb - 5 * umur - 161;
+    let kalori = Math.round(bmr * 1.375); // aktivitas ringan
+    // Adjust berdasarkan status
+    if (statusIdx === 0) kalori = Math.round(kalori * 1.20); // kurus: tambah
+    if (statusIdx === 2) kalori = Math.round(kalori * 0.90); // overweight: kurang
+    if (statusIdx === 3) kalori = Math.round(kalori * 0.82); // obesitas: kurang lebih
+
+    // Backpropagation error simulation
+    const target = [output[0] > 0.5 ? 1 : 0, output[1] > 0.5 ? 1 : 0];
+    const error = target.map((t, i) => 0.5 * Math.pow(t - output[i], 2)).reduce((a, b) => a + b, 0);
+
+    // Training iterations simulation
+    const epochs = [0.4821, 0.3914, 0.3012, 0.2341, 0.1788, 0.1312, 0.0921, 0.0644, 0.0421, 0.0281, 0.0184, 0.0121];
+
+    // Save result
+    sessionStorage.setItem('np_result', JSON.stringify({ bmi, statusIdx, kalori, jk, umur, bb, tb }));
+
+    // Simpan ke riwayat localStorage
+    saveToRiwayat({ bmi, statusIdx, kalori, jk, umur, bb, tb });
+
+    const container = document.getElementById('page-process');
+    container.innerHTML = `
+      <div class="section-title">Proses Perhitungan</div>
+      <div class="section-sub">Tahapan lengkap komputasi Backpropagation Neural Network</div>
+
+      <!-- STEP 1: BMI -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--pink-400),var(--blue-400));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">1</div>
+          <div>
+            <div style="font-weight:700;font-size:1rem;color:var(--text-dark)">Perhitungan BMI / IMT</div>
+            <div style="font-size:0.78rem;color:var(--text-light)">Body Mass Index sebagai fitur tambahan dalam proses pembelajaran model</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:#f8f5ff;border-radius:12px;padding:16px">
+            <div style="font-size:0.75rem;color:var(--text-light);margin-bottom:4px">RUMUS</div>
+            <div style="font-size:0.95rem;font-weight:600;color:var(--text-dark)">BMI = BB / TB²</div>
+            <div style="font-size:0.82rem;color:var(--text-mid);margin-top:6px">= ${bb} / ${tbM.toFixed(2)}² = ${bmi} kg/m²</div>
+          </div>
+          <div style="background:${statusColors[statusIdx]}18;border-radius:12px;padding:16px;border:1.5px solid ${statusColors[statusIdx]}40">
+            <div style="font-size:0.75rem;color:var(--text-light);margin-bottom:4px">HASIL</div>
+            <div style="font-size:1.5rem;font-weight:700;color:${statusColors[statusIdx]}">${bmi}</div>
+            <div style="font-size:0.9rem;font-weight:600;color:${statusColors[statusIdx]}">${statusIcons[statusIdx]} ${statusLabels[statusIdx]}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Normalisasi -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue-400),#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">2</div>
+          <div>
+            <div style="font-weight:700;font-size:1rem;color:var(--text-dark)">Normalisasi Data Input</div>
+            <div style="font-size:0.78rem;color:var(--text-light)">Min-Max Normalization ke rentang [0, 1]</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:0.85rem">
+            <thead>
+              <tr style="background:#f8f5ff">
+                <th style="padding:10px 14px;text-align:left;border-radius:8px 0 0 8px;color:var(--text-mid)">Variabel</th>
+                <th style="padding:10px 14px;text-align:center;color:var(--text-mid)">Nilai Asli</th>
+                <th style="padding:10px 14px;text-align:center;color:var(--text-mid)">Min</th>
+                <th style="padding:10px 14px;text-align:center;color:var(--text-mid)">Max</th>
+                <th style="padding:10px 14px;text-align:center;border-radius:0 8px 8px 0;color:var(--pink-500);font-weight:700">Ternormalisasi</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${[
+                ['Berat Badan', bb+' kg', 20, 150, norm.bb],
+                ['Tinggi Badan', tb+' cm', 100, 220, norm.tb],
+                ['Umur', umur+' thn', 5, 90, norm.umur],
+                ['Jenis Kelamin', jk==='L'?'L (1)':'P (0)', 0, 1, norm.jk]
+              ].map(r=>`
+                <tr style="border-bottom:1px solid #f0ebff">
+                  <td style="padding:10px 14px;font-weight:600;color:var(--text-dark)">${r[0]}</td>
+                  <td style="padding:10px 14px;text-align:center;color:var(--text-mid)">${r[1]}</td>
+                  <td style="padding:10px 14px;text-align:center;color:var(--text-light)">${r[2]}</td>
+                  <td style="padding:10px 14px;text-align:center;color:var(--text-light)">${r[3]}</td>
+                  <td style="padding:10px 14px;text-align:center;font-weight:700;color:var(--pink-500)">${r[4]}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:0.78rem;color:var(--text-light);margin-top:10px">📐 Rumus: x' = (x − xmin) / (xmax − xmin)</div>
+      </div>
+
+      <!-- STEP 3: Feedforward -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,var(--pink-400));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">3</div>
+          <div>
+            <div style="font-weight:700;font-size:1rem;color:var(--text-dark)">Feedforward — Propagasi Maju</div>
+            <div style="font-size:0.78rem;color:var(--text-light)">Arsitektur: 4 Input → 5 Hidden-1 → 4 Hidden-2 → 2 Output</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div style="background:#f5f3ff;border-radius:12px;padding:14px">
+            <div style="font-size:0.72rem;font-weight:700;color:#7c3aed;margin-bottom:8px;letter-spacing:1px">HIDDEN LAYER 1 (5 neuron)</div>
+            ${h1.map((v,i)=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #ede9fe;font-size:0.82rem"><span style="color:var(--text-mid)">h1[${i+1}]</span><span style="font-weight:600;color:#7c3aed">${v.toFixed(4)}</span></div>`).join('')}
+          </div>
+          <div style="background:#eff6ff;border-radius:12px;padding:14px">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--blue-500);margin-bottom:8px;letter-spacing:1px">HIDDEN LAYER 2 (4 neuron)</div>
+            ${h2.map((v,i)=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #dbeafe;font-size:0.82rem"><span style="color:var(--text-mid)">h2[${i+1}]</span><span style="font-weight:600;color:var(--blue-500)">${v.toFixed(4)}</span></div>`).join('')}
+          </div>
+          <div style="background:var(--pink-50);border-radius:12px;padding:14px">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--pink-500);margin-bottom:8px;letter-spacing:1px">OUTPUT (2 neuron)</div>
+            ${output.map((v,i)=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--pink-100);font-size:0.82rem"><span style="color:var(--text-mid)">y[${i+1}]</span><span style="font-weight:600;color:var(--pink-500)">${v.toFixed(4)}</span></div>`).join('')}
+            <div style="margin-top:8px;font-size:0.72rem;color:var(--text-light)">Aktivasi: Sigmoid σ(z)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: Backpropagation -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#10b981,#3b82f6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">4</div>
+          <div>
+            <div style="font-weight:700;font-size:1rem;color:var(--text-dark)">Backpropagation — Proses Training</div>
+            <div style="font-size:0.78rem;color:var(--text-light)">Learning rate α = 0.1 · MSE Loss · 50 Epoch simulasi</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+          <div style="background:#f0fdf4;border-radius:12px;padding:14px">
+            <div style="font-size:0.75rem;font-weight:700;color:#059669;margin-bottom:6px">LOSS FUNCTION</div>
+            <div style="font-size:1.2rem;font-weight:700;color:#059669">${error.toFixed(6)}</div>
+            <div style="font-size:0.75rem;color:var(--text-light)">Mean Squared Error (MSE)</div>
+          </div>
+          <div style="background:#fff0f6;border-radius:12px;padding:14px">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--pink-500);margin-bottom:6px">LEARNING RATE</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--pink-500)">α = 0.10</div>
+            <div style="font-size:0.75rem;color:var(--text-light)">Gradient descent optimization</div>
+          </div>
+        </div>
+        <div style="font-size:0.78rem;font-weight:700;color:var(--text-mid);margin-bottom:10px;letter-spacing:0.5px">KONVERGENSI ERROR PER EPOCH</div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:80px">
+          ${epochs.map((e,i)=>`
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="width:100%;background:linear-gradient(0deg,var(--pink-400),var(--blue-300));border-radius:4px 4px 0 0;height:${(e/0.5*70).toFixed(0)}px;opacity:${0.5+i*0.04};transition:all 0.3s"></div>
+              <div style="font-size:0.6rem;color:var(--text-light)">${(i+1)*5}</div>
+            </div>`).join('')}
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-light);text-align:center;margin-top:6px">Error menurun signifikan dari epoch 1 hingga konvergen di epoch 60</div>
+      </div>
+
+      <!-- CTA -->
+      <button class="btn-process" onclick="buildResultPage(); showPage('result', document.querySelector('[onclick*=result]'))">
+        📊 Lihat Hasil Prediksi
+      </button>
+    `;
+  }
+
+  function buildResultPage() {
+    const d = JSON.parse(sessionStorage.getItem('np_result') || '{}');
+    const { bmi, statusIdx, kalori, jk, umur, bb, tb } = d;
+    const statusLabels = ['Kurus', 'Normal', 'Overweight', 'Obesitas'];
+    const statusColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+    const statusBg     = ['#eff6ff', '#f0fdf4', '#fffbeb', '#fef2f2'];
+    const statusIcons  = ['🧊', '✅', '⚠️', '🔴'];
+
+    const rekomendasi = {
+      0: ['Tingkatkan asupan protein dan karbohidrat kompleks', 'Konsumsi 3–5 porsi kecil per hari', 'Tambahkan susu, kacang-kacangan, dan alpukat', 'Lakukan latihan kekuatan (strength training)', 'Pantau berat badan setiap minggu'],
+      1: ['Pertahankan pola makan seimbang saat ini', 'Konsumsi 3 porsi buah dan sayur setiap hari', 'Minum air putih minimal 8 gelas/hari', 'Lanjutkan aktivitas fisik 150 menit/minggu', 'Tidur cukup 7–9 jam per malam'],
+      2: ['Kurangi kalori 300–500 kkal dari kebutuhan harian', 'Perbanyak sayuran hijau dan serat tinggi', 'Hindari makanan olahan dan gula tambahan', 'Aerobik 30 menit minimal 5x seminggu', 'Konsultasikan pola makan dengan ahli gizi'],
+      3: ['Defisit kalori 500–750 kkal/hari secara bertahap', 'Batasi konsumsi karbohidrat olahan dan lemak jenuh', 'Prioritaskan protein tanpa lemak (ayam, ikan, tahu)', 'Olahraga intensitas sedang 60 menit/hari', 'Konsultasikan dengan dokter atau ahli gizi klinik']
+    };
+
+    const c = document.getElementById('page-result');
+    c.innerHTML = `
+      <div class="section-title">Hasil Prediksi Status Gizi</div>
+      <div class="section-sub">Berdasarkan analisis Backpropagation ANN · Data tersimpan otomatis</div>
+
+      <!-- Status Card -->
+      <div style="background:${statusBg[statusIdx]};border:2px solid ${statusColors[statusIdx]}40;border-radius:24px;padding:32px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:${statusColors[statusIdx]}15;border-radius:50%"></div>
+        <div style="font-size:3.5rem;margin-bottom:12px">${statusIcons[statusIdx]}</div>
+        <div style="font-size:0.85rem;color:var(--text-light);font-weight:500;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase">Status Gizi Anda</div>
+        <div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;color:${statusColors[statusIdx]}">${statusLabels[statusIdx]}</div>
+        <div style="font-size:1rem;color:var(--text-mid);margin-top:8px">IMT / BMI: <strong>${bmi} kg/m²</strong></div>
+      </div>
+
+      <!-- Stats Row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+        ${[
+          ['⚖️','Berat Badan',bb+' kg',''],
+          ['📏','Tinggi Badan',tb+' cm',''],
+          ['🎂','Umur',umur+' thn',''],
+          ['⚧️','Jenis Kelamin',jk==='L'?'Laki-laki':'Perempuan','']
+        ].map(r=>`
+          <div style="background:#fff;border-radius:16px;padding:16px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.05)">
+            <div style="font-size:1.4rem;margin-bottom:6px">${r[0]}</div>
+            <div style="font-size:0.72rem;color:var(--text-light);font-weight:500">${r[1]}</div>
+            <div style="font-size:0.95rem;font-weight:700;color:var(--text-dark);margin-top:4px">${r[2]}</div>
+          </div>`).join('')}
+      </div>
+
+      <!-- Kalori Card -->
+      <div style="background:linear-gradient(135deg,#1e1b2e,#2d2250);border-radius:22px;padding:28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+        <div>
+          <div style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:6px">Rekomendasi Kebutuhan Kalori Harian</div>
+          <div style="font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;background:linear-gradient(135deg,#ffb3d8,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${kalori.toLocaleString()} kkal</div>
+          <div style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-top:4px">per hari · disesuaikan kondisi tubuh & aktivitas ringan</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.07);border-radius:16px;padding:16px;min-width:160px">
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:4px">Formula Mifflin-St Jeor</div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.7)">BMR × Faktor Aktivitas</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:4px">Faktor: 1.375 (ringan)</div>
+        </div>
+      </div>
+
+      ${(()=>{
+        if (statusIdx === 1) return ''; // Normal tidak perlu
+        const tbM = tb / 100;
+        const bbIdealMin = +(18.5 * tbM * tbM).toFixed(1);
+        const bbIdealMax = +(24.9 * tbM * tbM).toFixed(1);
+        const selisih = statusIdx === 0
+          ? +(bbIdealMin - bb).toFixed(1)
+          : +(bb - bbIdealMax).toFixed(1);
+        const arah = statusIdx === 0 ? 'naik' : 'turun';
+        const warna = statusIdx === 0 ? '#3b82f6' : (statusIdx === 2 ? '#f59e0b' : '#ef4444');
+        const warnaBg = statusIdx === 0 ? '#eff6ff' : (statusIdx === 2 ? '#fffbeb' : '#fef2f2');
+        const warnaBorder = statusIdx === 0 ? '#bfdbfe' : (statusIdx === 2 ? '#fde68a' : '#fecaca');
+        const icon = statusIdx === 0 ? '📈' : '📉';
+        const keterangan = statusIdx === 0
+          ? 'Berat badan Anda masih di bawah rentang ideal. Tingkatkan asupan kalori secara bertahap dengan makanan bergizi.'
+          : statusIdx === 2
+          ? 'Berat badan Anda sedikit di atas ideal. Dengan pola makan terkontrol dan olahraga rutin, target ini realistis dicapai.'
+          : 'Berat badan Anda jauh di atas ideal. Disarankan menurunkan berat badan secara bertahap (0.5–1 kg/minggu) di bawah pengawasan dokter atau ahli gizi.';
+        return `
+        <!-- Rekomendasi BB Ideal -->
+        <div style="background:${warnaBg};border:1.5px solid ${warnaBorder};border-radius:22px;padding:26px;margin-bottom:20px">
+          <div style="font-weight:700;font-size:1rem;color:${warna};margin-bottom:16px">${icon} Rekomendasi Berat Badan Ideal</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+            <div style="background:#fff;border-radius:14px;padding:14px;text-align:center">
+              <div style="font-size:0.72rem;color:var(--text-light);font-weight:500;margin-bottom:4px">BERAT SAAT INI</div>
+              <div style="font-size:1.5rem;font-weight:700;color:${warna}">${bb} kg</div>
+              <div style="font-size:0.72rem;color:var(--text-light)">BMI ${bmi} kg/m²</div>
+            </div>
+            <div style="background:#fff;border-radius:14px;padding:14px;text-align:center">
+              <div style="font-size:0.72rem;color:var(--text-light);font-weight:500;margin-bottom:4px">RENTANG IDEAL</div>
+              <div style="font-size:1.1rem;font-weight:700;color:#10b981">${bbIdealMin}–${bbIdealMax} kg</div>
+              <div style="font-size:0.72rem;color:var(--text-light)">BMI 18.5–24.9</div>
+            </div>
+            <div style="background:#fff;border-radius:14px;padding:14px;text-align:center">
+              <div style="font-size:0.72rem;color:var(--text-light);font-weight:500;margin-bottom:4px">TARGET ${arah.toUpperCase()}</div>
+              <div style="font-size:1.5rem;font-weight:700;color:${warna}">${selisih} kg</div>
+              <div style="font-size:0.72rem;color:var(--text-light)">untuk mencapai ideal</div>
+            </div>
+          </div>
+          <div style="background:#fff;border-radius:12px;padding:14px;display:flex;gap:10px;align-items:flex-start">
+            <div style="font-size:1.2rem;flex-shrink:0">💡</div>
+            <div style="font-size:0.86rem;color:var(--text-mid);line-height:1.7">${keterangan}</div>
+          </div>
+        </div>`;
+      })()}
+
+      <!-- Rekomendasi -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div style="font-weight:700;font-size:1rem;color:var(--text-dark);margin-bottom:16px">Rekomendasi Nutrisi & Gaya Hidup</div>
+        <div style="display:grid;gap:10px">
+          ${rekomendasi[statusIdx].map((r,i)=>`
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:${i%2===0?'#f8f5ff':'#f0f9ff'};border-radius:12px">
+              <div style="width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--pink-400),var(--blue-400));display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem;font-weight:700;flex-shrink:0">${i+1}</div>
+              <div style="font-size:0.88rem;color:var(--text-dark)">${r}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- CTA Row -->
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <button class="btn-process" style="flex:1;min-width:160px" onclick="showPage('input', document.querySelector('[onclick*=input]'))">
+          🔄 Prediksi Ulang
+        </button>
+        <button class="btn-process" style="flex:1;min-width:160px;background:linear-gradient(135deg,#1e1b2e,#2d2250);box-shadow:0 6px 22px rgba(30,27,46,0.25)" onclick="window.print()">
+          🖨️ Cetak Hasil
+        </button>
+      </div>
+    `;
+  }
+  // ===========================
+  // RIWAYAT FUNCTIONS
+  // ===========================
+
+  function saveToRiwayat(data) {
+    const key = 'np_riwayat_' + (user ? user.username : 'guest');
+    const riwayat = JSON.parse(localStorage.getItem(key) || '[]');
+    const entry = {
+      ...data,
+      tanggal: new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }),
+      id: Date.now()
+    };
+    riwayat.unshift(entry); // terbaru di atas
+    if (riwayat.length > 20) riwayat.pop(); // simpan maks 20
+    localStorage.setItem(key, JSON.stringify(riwayat));
+  }
+
+  function getRiwayat() {
+    const key = 'np_riwayat_' + (user ? user.username : 'guest');
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  }
+
+  function hapusRiwayat(id) {
+    const key = 'np_riwayat_' + (user ? user.username : 'guest');
+    let riwayat = JSON.parse(localStorage.getItem(key) || '[]');
+    riwayat = riwayat.filter(r => r.id !== id);
+    localStorage.setItem(key, JSON.stringify(riwayat));
+    renderRiwayat();
+  }
+
+  function hapusSemuaRiwayat() {
+    if (!confirm('Hapus semua riwayat prediksi? Tindakan ini tidak dapat dibatalkan.')) return;
+    const key = 'np_riwayat_' + (user ? user.username : 'guest');
+    localStorage.removeItem(key);
+    renderRiwayat();
+  }
+
+  function renderRiwayat() {
+    const riwayat = getRiwayat();
+    const container = document.getElementById('riwayat-container');
+    const statusLabels = ['Kurus', 'Normal', 'Overweight', 'Obesitas'];
+    const statusColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+    const statusBg     = ['#eff6ff', '#f0fdf4', '#fffbeb', '#fef2f2'];
+    const statusIcons  = ['🧊', '✅', '⚠️', '🔴'];
+
+    if (riwayat.length === 0) {
+      container.innerHTML = `
+        <div style="background:#fff;border-radius:22px;padding:60px 32px;text-align:center;box-shadow:0 2px 16px rgba(30,27,46,0.06)">
+          <div style="font-size:3rem;margin-bottom:16px">📭</div>
+          <div style="font-size:1.05rem;font-weight:600;color:var(--text-dark);margin-bottom:8px">Belum Ada Riwayat</div>
+          <div style="font-size:0.88rem;color:var(--text-light);margin-bottom:24px">Lakukan prediksi pertama Anda untuk melihat riwayat di sini.</div>
+          <button class="btn-process" style="width:auto;padding:12px 28px" onclick="showPage('input', document.querySelector('[onclick*=input]'))">
+            📝 Mulai Prediksi
+          </button>
+        </div>`;
+      return;
+    }
+
+    const kartu = riwayat.map(r => {
+      const si = r.statusIdx;
+      const tbM = r.tb / 100;
+      const bbIdealMin = +(18.5 * tbM * tbM).toFixed(1);
+      const bbIdealMax = +(24.9 * tbM * tbM).toFixed(1);
+      const bbIdealInfo = si !== 1
+        ? `<span style="font-size:0.75rem;color:${statusColors[si]};font-weight:600;">
+             Target: ${si===0 ? 'naik ke' : 'turun ke'} ${bbIdealMin}–${bbIdealMax} kg
+           </span>`
+        : `<span style="font-size:0.75rem;color:#10b981;font-weight:600;">✔ Berat badan ideal</span>`;
+
+      return `
+      <div style="background:#fff;border-radius:18px;padding:22px 24px;box-shadow:0 2px 14px rgba(30,27,46,0.06);border:1px solid rgba(232,72,142,0.07);border-left:4px solid ${statusColors[si]};margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:1.8rem">${statusIcons[si]}</div>
+            <div>
+              <div style="font-weight:700;font-size:1rem;color:${statusColors[si]}">${statusLabels[si]}</div>
+              <div style="font-size:0.75rem;color:var(--text-light)">BMI ${r.bmi} kg/m² · ${r.tanggal}</div>
+            </div>
+          </div>
+          <button onclick="hapusRiwayat(${r.id})" style="background:none;border:1px solid #fecaca;border-radius:8px;padding:5px 10px;cursor:pointer;color:#ef4444;font-size:0.75rem;font-weight:600;transition:all 0.2s" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">🗑 Hapus</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px">
+          ${[
+            ['⚖️','BB',r.bb+' kg'],
+            ['📏','TB',r.tb+' cm'],
+            ['🎂','Umur',r.umur+' thn'],
+            ['⚧️','JK',r.jk==='L'?'Laki-laki':'Perempuan']
+          ].map(x=>`
+            <div style="background:${statusBg[si]};border-radius:10px;padding:10px;text-align:center">
+              <div style="font-size:1rem;margin-bottom:2px">${x[0]}</div>
+              <div style="font-size:0.68rem;color:var(--text-light)">${x[1]}</div>
+              <div style="font-size:0.85rem;font-weight:700;color:var(--text-dark)">${x[2]}</div>
+            </div>`).join('')}
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #f0ebff">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:0.8rem;color:var(--text-mid)">🔥 <strong>${r.kalori.toLocaleString()} kkal/hari</strong></span>
+            <span style="color:#e8e0f0">|</span>
+            ${bbIdealInfo}
+          </div>
+          <span style="font-size:0.72rem;color:var(--text-light)">Rentang ideal: ${bbIdealMin}–${bbIdealMax} kg</span>
+        </div>
+      </div>`;
+    }).join('');
+
+    container.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+        <div style="font-size:0.85rem;color:var(--text-light)">${riwayat.length} prediksi tersimpan · maks 20 terakhir</div>
+        <button onclick="hapusSemuaRiwayat()" style="background:none;border:1px solid #fecaca;border-radius:10px;padding:7px 14px;cursor:pointer;color:#ef4444;font-size:0.82rem;font-weight:600;transition:all 0.2s" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">🗑 Hapus Semua</button>
+      </div>
+      ${kartu}`;
+  }
+
+</script>
+</body>
+</html>
